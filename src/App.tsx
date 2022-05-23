@@ -5,7 +5,7 @@ import SuggestiveActions from "./SuggestiveActions";
 /**
  * Only need to initialize the suggestive actions once.
  */
-const suggestiveActions = new SuggestiveActions();
+const SUGGESTIVE_ACTIONS = new SuggestiveActions();
 
 /**
  * We currently hardcode the user id.
@@ -17,6 +17,11 @@ const USER_ID = 1;
  * This way the prototype can be better presented.
  */
 const CURRENT_DATE = DateTime.now().startOf("week");
+
+/**
+ * The minimum date that a prediction can be made for.
+ */
+const MINIMUM_DATE = CURRENT_DATE.plus({ days: 7 });
 
 interface Action {
   date: string;
@@ -73,19 +78,17 @@ const App = () => {
         label: action,
       },
     ]);
-    suggestiveActions.trackAction(USER_ID, action, currentWeekToInteger());
+    SUGGESTIVE_ACTIONS.trackAction(USER_ID, action, currentWeekToInteger());
   };
 
   /**
    * Calculate a next action from the AI model.
    */
   const calculateSuggestedAction = () => {
-    suggestiveActions
-      .predictAction(
-        USER_ID,
-        parseInt(currentDate.plus({ days: 1 }).toFormat("E"))
-      )
-      .then((result) => setPrediction(result));
+    SUGGESTIVE_ACTIONS.predictAction(
+      USER_ID,
+      parseInt(currentDate.plus({ days: 1 }).toFormat("E"))
+    ).then((result) => setPrediction(result));
   };
 
   return (
@@ -102,7 +105,14 @@ const App = () => {
         <p>
           You have to select at least one action per day to train the AI model.
           <br />
-          After <b>7 days</b> you can predict the next day's action.
+          {MINIMUM_DATE.diff(currentDate, "days").days >= 0 ? (
+            <>
+              After <b>{MINIMUM_DATE.diff(currentDate, "days").days} days</b>{" "}
+              you can predict the next day's action.
+            </>
+          ) : (
+            <>You can predict the next day's action.</>
+          )}
         </p>
       </div>
       <div style={{ display: "flex", justifyContent: "center" }}>
