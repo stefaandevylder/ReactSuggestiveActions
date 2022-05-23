@@ -39,6 +39,7 @@ const App = () => {
 
   const onNextDayHandler = () => {
     setCurrentDate((date) => date.plus({ days: 1 }));
+    setPrediction(undefined);
 
     if (currentDate.diff(CURRENT_DATE, "days").toObject().days! > 6) {
       setAllowPredictions(true);
@@ -62,7 +63,10 @@ const App = () => {
 
   const logSuggestedAction = () => {
     suggestiveActions
-      .predictAction(USER_ID, currentWeekToInteger())
+      .predictAction(
+        USER_ID,
+        parseInt(currentDate.plus({ days: 1 }).toFormat("E"))
+      )
       .then((result) => setPrediction(result));
   };
 
@@ -130,6 +134,15 @@ const App = () => {
         </div>
       )}
 
+      {prediction && (
+        <div style={{ marginTop: "30px" }}>
+          <b>
+            Prediction for {currentDate.plus({ days: 1 }).toFormat("EEEE")}:{" "}
+          </b>
+          <span>{prediction.label}</span>
+        </div>
+      )}
+
       <div style={{ marginTop: "30px" }}>
         {actionsByWeek.length > 0 &&
           actionsByWeek.map((action, index) => (
@@ -139,13 +152,6 @@ const App = () => {
             </div>
           ))}
       </div>
-
-      {prediction && (
-        <div style={{ marginTop: "30px" }}>
-          <b>Prediction for the next day: </b>
-          <span>{prediction.label}</span>
-        </div>
-      )}
     </div>
   );
 };
