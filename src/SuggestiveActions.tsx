@@ -6,23 +6,14 @@ import * as ts from "@tensorflow/tfjs";
  */
 const classifier = new KNNClassifier();
 
-/**
- * We are only getting the seconds, in productions this would be the current time.
- * @returns The current seconds
- */
-const getTimeAsInteger = () => {
-  let date = new Date();
-  return date.getSeconds();
-};
-
 export default class SuggestiveActions {
   /**
    * Track an action as a suggestion.
    * @param {Tensor} action The action to track.
    * @param {string} userId The user id.
    */
-  trackAction(action: string, userId: number) {
-    classifier.addExample(ts.tensor([userId, getTimeAsInteger()]), action);
+  trackAction(userId: number, action: string, date: number) {
+    classifier.addExample(ts.tensor([userId, date]), action);
   }
 
   /**
@@ -30,8 +21,8 @@ export default class SuggestiveActions {
    * @param userId The user id.
    * @returns The predicted action.
    */
-  predictAction(userId: number) {
-    return classifier.predictClass(ts.tensor([userId, getTimeAsInteger()]));
+  predictAction(userId: number, date: number) {
+    return classifier.predictClass(ts.tensor([userId, date]));
   }
 
   /**
