@@ -37,6 +37,11 @@ const App = () => {
   const [actionsByWeek, setActionsByWeek] = useState([] as Action[]);
   const [prediction, setPrediction] = useState<Prediction>();
 
+  /**
+   * When next day gets pushed, the current date is updated.
+   * Then we clear any prediction.
+   * At last we allow predictions again.
+   */
   const onNextDayHandler = () => {
     setCurrentDate((date) => date.plus({ days: 1 }));
     setPrediction(undefined);
@@ -46,10 +51,20 @@ const App = () => {
     }
   };
 
+  /**
+   * Convert the current day to a day of the week integer.
+   * Integer is needed for the AI model.
+   * @returns The current date as an integer.
+   */
   const currentWeekToInteger = () => {
     return parseInt(currentDate.toFormat("E"));
   };
 
+  /**
+   * When a button is clicked, we track the action for the local state,
+   * after that we register the action in the AI model.
+   * This uses KNN classifier.
+   */
   const trackButtonClickAction = (action: string) => {
     setActionsByWeek((actions) => [
       ...actions,
@@ -61,7 +76,10 @@ const App = () => {
     suggestiveActions.trackAction(USER_ID, action, currentWeekToInteger());
   };
 
-  const logSuggestedAction = () => {
+  /**
+   * Calculate a next action from the AI model.
+   */
+  const calculateSuggestedAction = () => {
     suggestiveActions
       .predictAction(
         USER_ID,
@@ -83,6 +101,8 @@ const App = () => {
         <h3>Current day: {currentDate.toFormat("EEEE")}</h3>
         <p>
           You have to select at least one action per day to train the AI model.
+          <br />
+          After <b>7 days</b> you can predict the next day's action.
         </p>
       </div>
       <div style={{ display: "flex", justifyContent: "center" }}>
@@ -126,7 +146,7 @@ const App = () => {
       {allowPredictions && (
         <div style={{ marginTop: "30px" }}>
           <button
-            onClick={logSuggestedAction}
+            onClick={calculateSuggestedAction}
             style={{ backgroundColor: "lightgreen" }}
           >
             Make prediction for the next day
