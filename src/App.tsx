@@ -87,17 +87,19 @@ const App = () => {
   const calculateSuggestedAction = () => {
     SUGGESTIVE_ACTIONS.predictAction(
       USER_ID,
-      parseInt(currentDate.plus({ days: 1 }).toFormat("E"))
+      parseInt(currentDate.toFormat("E"))
     ).then((result) => setPrediction(result));
   };
 
   return (
     <div style={{ textAlign: "center", fontFamily: "arial" }}>
       <div>
-        <h1>This is a prototype for Stefaan De Vylder's bachelor's thesis.</h1>
+        <h1>
+          This is a proof-of-concept for Stefaan De Vylder's bachelor's thesis.
+        </h1>
         <h4>
-          The prototype shows an exmaple on how to implement machine learning in
-          a front-end application.
+          The proof-of-concept shows an exmaple on how to implement machine
+          learning in a front-end application.
         </h4>
       </div>
       <div style={{ marginTop: "50px" }}>
@@ -159,16 +161,14 @@ const App = () => {
             onClick={calculateSuggestedAction}
             style={{ backgroundColor: "lightgreen" }}
           >
-            Make prediction for the next day
+            Make prediction
           </button>
         </div>
       )}
 
       {prediction && (
         <div style={{ marginTop: "30px" }}>
-          <b>
-            Prediction for {currentDate.plus({ days: 1 }).toFormat("EEEE")}:{" "}
-          </b>
+          <b>Prediction for {currentDate.toFormat("EEEE")}: </b>
           <span>{prediction.label}</span>
         </div>
       )}
